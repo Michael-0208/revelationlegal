@@ -1,0 +1,7 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/js/user_survey.js": "/js/user_survey.js",
+    "/js/CsvFile.js": "/js/CsvFile.js",
+    "/js/LocalFileReader.js": "/js/LocalFileReader.js",
+    "/js/CsvValidator.js": "/js/CsvValidator.js"
+}

@@ -1,0 +1,305 @@
+@extends('layouts.reports')
+@section('content')
+<style>
+    .table-wrapper {
+        background: #fff;
+        padding: 20px;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    }
+
+    .table-title h2 {
+        margin: 6px 0 0;
+        font-size: 22px;
+    }
+
+    .table-title .add-new {
+        float: right;
+        height: 30px;
+        font-weight: bold;
+        font-size: 12px;
+        text-shadow: none;
+        min-width: 100px;
+        border-radius: 50px;
+        line-height: 13px;
+    }
+
+    .table-title .add-new i {
+        margin-right: 4px;
+    }
+
+    table.table {
+        table-layout: fixed;
+    }
+
+    table.table tr th,
+    table.table tr td {
+        border-color: #e9e9e9;
+    }
+
+    table.table th i {
+        font-size: 13px;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+
+    table.table th:last-child {
+        width: 100px;
+    }
+
+    table.table td a {
+        cursor: pointer;
+        display: inline-block;
+        margin: 0 5px;
+        min-width: 24px;
+    }
+
+    table.table .form-control {
+        height: 32px;
+        line-height: 32px;
+        box-shadow: none;
+        border-radius: 2px;
+    }
+
+    table.table .form-control.error {
+        border-color: #f50000;
+    }
+
+    table.table td .add {
+        display: none;
+    }
+</style>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<div class="container">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="cont-mtitle container">
+                    <h1 class="text-survey font-bold text-lg">Location Settings for {{ $survey->survey_name }}</h1>
+                    <button type="button" class="btn btn-revelation-primary add-new"><i class="fa fa-plus"></i> Add
+                        New</button>
+                </div>
+            </div>
+            <table id="setting_locations sl" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Location_OTHER</th>
+                        <th>Location_Regional</th>
+                        <th>Location_Adjacent</th>
+                        <th>Location_Current</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($data['locations'] as $location)
+                    <tr class="data-tr" data-id="{{ $location->location_id }}">
+                        <td data-desc="location">{{ $location->location }}</td>
+                        <td data-desc="location_OTHER">{{ $location->location_OTHER }}</td>
+                        <td data-desc="location_Regional">{{ $location->location_Regional }}</td>
+                        <td data-desc="location_Adjacent">{{ $location->location_Adjacent }}</td>
+                        <td data-desc="location_Current">{{ $location->location_Current }}</td>
+                        <td>
+                            <a class="add font-revelation" title="Add"><i class="fa fa-save"></i></a>
+                            <a class="edit font-revelation" title="Edit"><i class="fa fa-edit"></i></a>
+                            <a class="delete font-revelation" title="Delete"><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    var survey_id = "{{$data['survey']->survey_id}}";
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        },
+    });
+    $(document).ready(function() {
+
+        $('#setting_locations').DataTable({
+            searching: true,
+            "bLengthChange": false,
+        });
+
+        var actions = $("table td:last-child").html();
+        // Append table with add row form on add new button click
+        $(".add-new").click(function() {
+            $(this).attr("disabled", "disabled");
+            var index = $("table tbody tr:last-child").index();
+            var row = '<tr class="data-tr" data-id="">' +
+                '<td data-desc="location"><input type="text" class="form-control" name="location" id="location"></td>' +
+                '<td data-desc="location_OTHER"><input type="number" class="form-control" name="location_OTHER" id="location_OTHER" step="0.01" min="0.00"></td>' +
+                '<td data-desc="location_Regional"><input type="number" class="form-control" name="location_Regional" id="location_Regional" step="0.01" min="0.00"></td>' +
+                '<td data-desc="location_Adjacent"><input type="number" class="form-control" name="location_Adjacent" id="location_Adjacent" step="0.01" min="0.00"></td>' +
+                '<td data-desc="location_Current"><input type="number" class="form-control" name="location_Current" id="location_Current" step="0.01" min="0.00"></td>' +
+                '<td>' + actions + '</td>' +
+                '</tr>';
+            $("table").append(row);
+            $("table tbody tr").eq(index + 1).find(".add, .edit").toggle();
+        });
+        // Add row on add button click
+        $(document).on("click", ".add", function() {
+            var empty = false;
+            var input = $(this).parents("tr").find('input');
+            var location_id = $(this).parents("tr").attr('data-id');
+            input.each(function() {
+                if (!$(this).val()) {
+                    $(this).addClass("error");
+                    empty = true;
+                } else {
+                    $(this).removeClass("error");
+                }
+            });
+            $(this).parents("tr").find(".error").first().focus();
+            if (!empty) {
+                if (!location_id) {
+                    $.ajax({
+                        url: '{{ route("settings/add_location") }}',
+                        type: 'POST',
+                        data: {
+                            '_token': "{{ csrf_token() }}",
+                            'survey_id': survey_id,
+                            'location': $('#location').val(),
+                            'location_OTHER': $('#location_OTHER').val(),
+                            'location_Regional': $('#location_Regional').val(),
+                            'location_Adjacent': $('#location_Adjacent').val(),
+                            'location_Current': $('#location_Current').val(),
+                        },
+                        dataType: 'json',
+                        beforeSend: function() {
+
+                        },
+                        success: function(res) {
+                            if (res.status == 200) {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Created successfully.'
+                                });
+                                input.each(function() {
+                                    $(this).parent("td").html($(this).val());
+                                });
+                                parentTR = $('tr.data-tr').filter(function() {
+                                    return !$(this).attr('data-id');
+                                });
+                                parentTR.attr('data-id', res.id);
+                                parentTR.find(".add, .edit").toggle();
+                            } else if (res.status == 400) {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'This location already exists.'
+                                });
+                            }
+                            $(".add-new").removeAttr("disabled");
+                        },
+                        error: function(request, error) {
+                            alert("Request: " + JSON.stringify(request));
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: '{{ route("settings/update_location") }}',
+                        type: 'POST',
+                        data: {
+                            '_token': "{{ csrf_token() }}",
+                            'survey_id': survey_id,
+                            'location_id': location_id,
+                            'location': $('#location').val(),
+                            'location_OTHER': $('#location_OTHER').val(),
+                            'location_Regional': $('#location_Regional').val(),
+                            'location_Adjacent': $('#location_Adjacent').val(),
+                            'location_Current': $('#location_Current').val(),
+                        },
+                        dataType: 'json',
+                        beforeSend: function(res) {},
+                        success: function(res) {
+                            if (res == 200) {
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: 'Updated successfully.'
+                                });
+                                input.each(function() {
+                                    $(this).parent("td").html($(this).val());
+                                });
+                                $(`tr[data-id=${location_id}]`).find(".add, .edit")
+                                    .toggle();
+                                $(".add-new").removeAttr("disabled");
+                            } else if (res == 400) {
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: 'The same location already exists.'
+                                });
+                            }
+                        },
+                        error: function(request, error) {
+                            alert("Request: " + JSON.stringify(request));
+                        }
+                    });
+                }
+            }
+        });
+        // Edit row on edit button click
+        $(document).on("click", ".edit", function() {
+            $(this).parents("tr").find("td:not(:last-child)").each(function() {
+                $(this).html('<input type="text" class="form-control" id="' + $(this).attr(
+                    'data-desc') + '" value="' + $(this).text() + '">');
+            });
+            $(this).parents("tr").find(".add, .edit").toggle();
+            $(".add-new").attr("disabled", "disabled");
+        });
+        // Delete row on delete button click
+        $(document).on("click", ".delete", function() {
+            let location_id = $(this).parents('tr').attr('data-id');
+            let location_desc = $(this).parents('tr').find('td[data-desc="location"]').html();
+            if (location_id == "") {
+                $(this).parents('tr').remove();
+                $(".add-new").removeAttr("disabled");
+            } else {
+                $.ajax({
+                    url: '{{ route("settings/delete_location") }}',
+                    type: 'POST',
+                    data: {
+                        '_token': "{{ csrf_token() }}",
+                        'location_id': location_id,
+                        'location_desc': location_desc,
+                        'survey_id': survey_id,
+                    },
+                    dataType: 'json',
+                    beforeSend: function() {
+
+                    },
+                    success: function(res) {
+                        if (res == 200) {
+                            $(`tr[data-id='${location_id}']`).remove();
+                            Toast.fire({
+                                icon: 'success',
+                                title: location_desc +
+                                    ' has been deleted successfully.'
+                            });
+                        } else if (res == 400) {
+                            Toast.fire({
+                                icon: 'error',
+                                title: location_desc +
+                                    ' has been used already, cannot delete.'
+                            });
+                        }
+                        $(".add-new").removeAttr("disabled");
+                    },
+                    error: function(request, error) {
+                        alert("Request: " + JSON.stringify(request));
+                    }
+                });
+            }
+        });
+    });
+</script>
+@endsection

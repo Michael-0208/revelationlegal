@@ -1,0 +1,73 @@
+@extends('layouts.reports')
+@section('content')
+<div class="container-fluid px-3 px-md-5">
+    <div class="cont-mtitle">
+        <h1 class="text-survey">Respondent Invitation Letters for {{ $survey->survey_name }}</h1>
+    </div>
+    <div class="py-4"> 
+        <div class="emailFormArea">
+            @if (isset($data['updated']) && $data['updated'] == 1)
+            <p class="alert alert-success">The settings have been updated successfully</p>
+            @endif
+            @if (isset($data['inserted']) && $data['inserted'] == 1)
+            <p class="alert alert-success">The settings have been saved successfully</p>
+            @endif
+            <form id="emailForm" method="POST" action="{{ route('invitations/update_settings') }}">
+                @csrf
+                <div class="form-group flex items-center justify-between">
+                    <label for="sender" class="col-5"><span>Message Sender:</span> [sender]</label>
+                    <input type="text" class="form-control col-7" id="sender" name="sender" value="{{ $data['settings'] !== 404 ? $data['settings']->sender : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="complete_by_date" class="col-5"><span>Message Complete-By Date:</span> [date]</label>
+                    <input type="date" class="form-control col-7" id="complete_by_date" name="complete_by_date" value="{{ $data['settings'] !== 404 ? $data['settings']->custom_date : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="managing_partner_name" class="col-5"><span>Name of Managing Partner:</span> [managing_partner]</label>
+                    <input type="text" class="form-control col-7" id="managing_partner_name" name="managing_partner_name" value="{{ $data['settings'] !== 404 ? $data['settings']->managing_partner_name : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="firm_domain_name" class="col-5"><span>Firm Domain Name:</span> [firm]</label>
+                    <input type="text" class="form-control col-7" id="firm_domain_name" name="firm_domain_name" value="{{ $data['settings'] !== 404 ? $data['settings']->firm_domain_name : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="questions_contact_name" class="col-5"><span>Questions Contact Name:</span> [questions_contact]</label>
+                    <input type="text" class="form-control col-7" id="questions_contact_name" name="questions_contact_name" value="{{ $data['settings'] !== 404 ? $data['settings']->questions_contact_name : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="instructions_pdf_link" class="col-5"><span>PDF Attachment Link:</span> [attachment_link_1]</label>
+                    <input type="text" class="form-control col-7" id="instructions_pdf_link" name="instructions_pdf_link" value="{{ $data['settings'] !== 404 ? $data['settings']->instructions_pdf_link : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="instructions_pdf_link_2" class="col-5"><span>PDF Attachment Link 2:</span> [attachment_link_2]</label>
+                    <input type="text" class="form-control col-7" id="instructions_pdf_link_2" name="instructions_pdf_link_2" value="{{ $data['settings'] !== 404 ? $data['settings']->instructions_pdf_link_2 : '' }}">
+                </div>
+                <div class="form-group flex items-center justify-between">
+                    <label for="email_subject" class="col-5"><span>Email Subject Line:</span></label>
+                    <input type="text" class="form-control col-7" id="email_subject" name="email_subject" value="{{ $data['settings'] !== 404 ? $data['settings']->email_subject : '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="invitation_letter_template"><span>Template Invitations Letter(HTML):</span></label>
+                    <textarea name="invitation_letter_template" id="invitation_letter_template" cols="30" rows="80">
+                    {{ $data['settings'] !== 404 ? $data['settings']->invitation_letter_template : '' }}
+                    </textarea>
+                </div>
+                <input type="hidden" id="survey_id" name="survey_id" value="{{ $data['survey']->survey_id }}">
+                <p class="text-center"><em>Use the "[field]" labels in your email template and they will be replaced with the value you've saved above.</em></p>
+                <button type="submit" class="revnor-btn float-right">Save Settings</button>
+                <div class="clear-both"></div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="{{ asset('js/ckeditor/ckeditor.js') }}"></script>
+
+<script>
+    CKEDITOR.replace('invitation_letter_template');
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').slideUp();
+        }, 2000);
+    });
+</script>
+@endsection

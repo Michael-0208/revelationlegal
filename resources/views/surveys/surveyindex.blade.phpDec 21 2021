@@ -1,0 +1,86 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+
+</head>
+
+<body>
+
+    @extends('layouts.reports')
+    @section('content')
+    <div class="container">
+        <div class="cont-mtitle  mt-8">
+            <h1 class=" text-survey">{{$data['survey']->survey_name}}</h1>
+        </div>
+        <div class="survaymain-cont   mx-auto">
+            <div class="max-w-7xl mx-auto">
+                <div class="survaymain-inner">
+                    <div class="border-gray-200">
+                        <h3 class="">Status</h3>
+                        <div>
+                            <div class="survay-status flex">
+                                <h1 class="text-survey font-bold w-60">Survey is Currently:</h1>
+                                <span class="active-status font-bold {{ $survey->survey_active == 1 ? 'text-support-activity' : 'text-red-700' }} m-0">{{$data['survey_active']}}</span>
+
+                            </div>
+                            <div class="survay-response flex ">
+                                <div class="font-bold text-survey w-60">Response Rate:</div>
+                                <div class="font-bold text-survey m-0">{{$data['total_resp']}} of {{$data['invitations_sent']}} ({{$data['percent_total']}}%)</div>
+                            </div>
+                            <div class="survay-completion flex ">
+                                <div class="font-bold text-survey w-60">Completion Rate:</div>
+                                <div class="text-survey font-bold m-0">{{$data['completed_resp']}} of {{$data['total_resp']}} ({{$data['percent_completed']}}%)</div>
+                            </div>
+                            <div class="survays-btns">
+                                <button id="activeBtn" class="btn " onclick="toggleActivation('{{ $survey->survey_id }}', 1);" style="{{ $survey->survey_active == 1 ? 'display:none;' : '' }}">Click Here Activate</button>
+                                <button id="deactiveBtn" class="btn " onclick="toggleActivation('{{ $survey->survey_id }}', 0);" style="{{ $survey->survey_active == 1 ? '' : 'display:none;' }}">Click Here Deactivate</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleActivation(survey_id, survey_active) {
+            $.ajax({
+                url: "{{ route('survey.toggle-active') }}",
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "survey_id": survey_id,
+                    "survey_active": survey_active,
+                },
+                dataType: 'json',
+                success: function(res) {
+                    if (res == 200) {
+                        if (survey_active == 1) {
+                            $('.active-status').removeClass('text-red-700');
+                            $('.active-status').addClass('text-support-activity');
+                            $('.active-status').html('Active');
+                            $('#activeBtn').hide();
+                            $('#deactiveBtn').show();
+                        } else {
+                            $('.active-status').removeClass('text-support-activity');
+                            $('.active-status').addClass('text-red-700');
+                            $('.active-status').html('Inactive');
+                            $('#activeBtn').show();
+                            $('#deactiveBtn').hide();
+                        }
+                    }
+                },
+                error: function(request, error) {
+                    alert("Request: " + JSON.stringify(request));
+                }
+            });
+        }
+    </script>
+    @endsection
+</body>
+
+</html>

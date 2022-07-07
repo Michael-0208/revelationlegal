@@ -1,0 +1,89 @@
+@extends('layouts.nonav')
+@section('content')
+    {{--    <div class="login-container">--}}
+    {{--    <div class="row">--}}
+    {{--        <div class="col-md-8 login-wrapper bg-blue corp-image">--}}
+    {{--            <div class="login-wrapper bg-blue">--}}
+    {{--                <div class="bg-pic">--}}
+    {{--            <h1>Welcome to the RevelationLegal portal.</h1>--}}
+    {{--            <p>Our unique analysis tool provides unprecedented vision into a law firm's operations. </p>--}}
+    {{--                    <img src="{{asset('imgs/corporate.jpg')}}" class="corp-image" />--}}
+    {{--                    <div class="welcome-message">--}}
+
+    {{--                    </div>--}}
+    {{--                </div>--}}
+    {{--            </div>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
+    {{--    </div>--}} 
+    <div class="container-fluid login-wrapper main-loginpage">
+        <div class="row">
+            <div class="col-md-8 bg-blue">
+                <img src="{{asset('imgs/corporate.jpg')}}"
+                     style="opacity: 0.25;
+                        height: 100%;
+                        min-width: 100%;
+                        position: absolute;
+                        left: 0;"/>
+                <div class="bg-pic">
+                    <div class="welcome-message">
+                        <h1>Welcome to the RevelationLegal portal.</h1>
+                        <p>Our unique analysis tool provides unprecedented vision into a law firm's operations. </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 bg-gray-100">
+{{--                <x-auth-card>--}}
+
+                    <x-guest-layout>
+                        <x-jet-authentication-card>
+                            <header class="flex items-center justify-between leading-tight p-2 md:p-4">
+                                <img src="{{asset('imgs/logo-new-small_rev.png')}}"/><br>
+
+                            </header>
+                            <x-jet-validation-errors class="mb-4" />
+
+                            @if (session('status'))
+                                <div class="mb-4 font-medium text-sm text-green-600">
+                                    {{ session('status') }}
+                                </div>
+                            @endif
+
+                            <form method="POST" action="{{ route('login') }}">
+                                @csrf
+
+                                <div>
+                                    <x-jet-label for="email" value="{{ __('Username or Email') }}" />
+                                    <x-jet-input class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autofocus />
+                                </div>
+
+                                <div class="mt-4">
+                                    <x-jet-label for="password" value="{{ __('Password') }}" />
+                                    <x-jet-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" />
+                                </div>
+
+                                <div class="block mt-4">
+                                    <label for="remember_me" class="flex items-center">
+                                        <x-jet-checkbox id="remember_me" name="remember" />
+                                        <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-end mt-4">
+                                    @if (Route::has('password.request'))
+                                        <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('password.request') }}">
+                                            {{ __('Forgot your password?') }}
+                                        </a>
+                                    @endif
+
+                                    <x-jet-button class="ml-4" style="background-color: #008EC1">
+                                        {{ __('Log in') }}
+                                    </x-jet-button>
+                                </div>
+                            </form>
+                        </x-jet-authentication-card>
+                    </x-guest-layout>
+            </div>
+        </div>
+@endsection
+

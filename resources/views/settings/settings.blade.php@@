@@ -1,0 +1,156 @@
+@extends('layouts.reports')
+@section('content')
+@if(!($data['settings']))
+<div class="flex justify-between items-center border-b">
+    <h3 class="text-survey font-bold py-4 px-8 m-0 text-lg">No settings found for {{ $survey->survey_name }}</h3>
+</div>
+@else
+<div class="p-4">
+    <div class="emailFormArea">
+        @if (isset($data['updated']) && $data['updated'] == 1)
+        <p class="alert alert-success">The settings have been updated successfully</p>
+        @endif
+        <form id="emailForm" method="POST" action="{{ route('settings/update_settings') }}" enctype="multipart/form-data">
+            @csrf
+            <div class="form-group flex items-center justify-between">
+                <label for="contact_email" class="col-5"><span>Contact E-mail:</span></label>
+                <input type="text" class="form-control col-7" id="contact_email" name="contact_email" value="{{ $data['settings']->contact_email }}">
+            </div>
+            <div class="form-group flex items-center justify-between">
+                <label for="contact_phone" class="col-5"><span>Contact Phone:</span></label>
+                <input type="text" class="form-control col-7" id="contact_phone" name="contact_phone" value="{{ $data['settings']->contact_phone }}">
+            </div>
+            <div class="form-group flex">
+                <label for="contact_email" class="col-5">
+                    <span>Splash Page:</span> <br>
+                    <div class="form-check p-0 mt-2" style="color:#337ab7;">
+                        <input type="checkbox" id="show_splash_page" name="show_splash_page" class="fomr-check-input" @if ($data['settings']->show_splash_page == 1)
+                        checked
+                        @endif>
+                        <label for="show_splash_page" class="form-check-label">Enable Splash Page</label>
+                    </div>
+                </label>
+                <textarea class="form-control" name="splash_page" id="splash_page" cols="30" rows="7">{{ $data['settings']->splash_page }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="logo_splash" class="col-5"><span>Splash Page Logo:</span></label>
+                <div class="col-7">
+                    <div class="flex items-center justify-between">
+                        <img style="height:80px;" src="{{ $data['settings']->logo_splash }}" alt="">
+                        <input type="file" class="form-control" id="logo_splash_file" name="logo_splash">
+                    </div>
+                    <label for="logo_splash" class="mt-2 font-bold">Choose logo splash file</label>
+                    <input type="text" class="form-control" id="logo_splash" name="logo_splash" value="{{ $data['settings']->logo_splash }}">
+                </div>
+            </div>
+            <div class="form-group flex">
+                <label for="logo_survey" class="col-5"><span>Survey Pages Logo:</span></label>
+                <div class="col-7">
+                    <div class="flex items-center justify-between">
+                        <img style="height:80px;" src="{{ $data['settings']->logo_survey }}" alt="">
+                        <input type="file" class="form-control" id="logo_survey_file" name="logo_survey">
+                    </div>
+                    <label for="logo_survey" class="mt-2 font-bold">Choose logo survey file</label>
+                    <input type="text" class="form-control" id="logo_survey" name="logo_survey" value="{{ $data['settings']->logo_survey }}">
+                </div>
+            </div>
+            <div class="form-group flex">
+                <label for="cobrand_logo" class="col-5"><span>Co-Brand Logo:</span></label>
+                <div class="col-7">
+                    <div class="flex items-center justify-between">
+                        <img style="height:80px;" src="{{ $data['settings']->cobrand_logo }}" alt="">
+                        <input type="file" class="form-control" id="cobrand_logo_file" name="cobrand_logo">
+                    </div>
+                    <label for="cobrand_logo" class="mt-2 font-bold">Choose logo co-brand file</label>
+                    <input type="text" class="form-control" id="cobrand_logo" name="cobrand_logo" value="{{ $data['settings']->cobrand_logo }}">
+                </div>
+            </div>
+            <div class="form-group flex">
+                <label for="begin_page" class="col-5">
+                    <span>Instruction Page:</span> <br>
+                    <div class="form-check p-0 mt-2" style="color:#337ab7;">
+                        <input type="checkbox" id="show_progress_bar" name="show_progress_bar" class="fomr-check-input" @if ($data['settings']->show_progress_bar == 1)
+                        checked
+                        @endif>
+                        <label for="show_progress_bar" class="form-check-label">Enable Progress Bar</label>
+                    </div>
+                </label>
+                <textarea class="form-control" name="begin_page" id="begin_page" cols="30" rows="7">{{ $data['settings']->begin_page }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="footer" class="col-5">
+                    <span>Footer:</span>
+                </label>
+                <textarea class="form-control" name="footer" id="footer" cols="30" rows="7">{{ $data['settings']->footer }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="weekly_hours_text" class="col-5">
+                    <span>Weekly Hours Page:</span>
+                </label>
+                <textarea class="form-control" name="weekly_hours_text" id="weekly_hours_text" cols="30" rows="7">{{ $data['settings']->weekly_hours_text }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="legal_yn_text" class="col-5">
+                    <span>Legal Services Yes/No Page:</span>
+                </label>
+                <textarea class="form-control" name="legal_yn_text" id="legal_yn_text" cols="30" rows="7">{{ $data['settings']->legal_yn_text }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="annual_legal_hours_text" class="col-5">
+                    <span>Annual Legal Hours Page:</span>
+                </label>
+                <textarea class="form-control" name="annual_legal_hours_text" id="annual_legal_hours_text" cols="30" rows="7">{{ $data['settings']->annual_legal_hours_text }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="location_dist_text" class="col-5">
+                    <span>Support Locations:</span> <br>
+                    <div class="form-check p-0 mt-2" style="color:#337ab7;">
+                        <input type="checkbox" id="show_location_dist" name="show_location_dist" class="fomr-check-input" @if ($data['settings']->show_location_dist == 1)
+                        checked
+                        @endif>
+                        <label for="show_location_dist" class="form-check-label">Enable Support Locations</label>
+                    </div>
+                </label>
+                <textarea class="form-control" name="location_dist_text" id="location_dist_text" cols="30" rows="7">{{ $data['settings']->location_dist_text }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="end_page" class="col-5">
+                    <span>End Page:</span> <br>
+                    <div class="form-check p-0 mt-2" style="color:#337ab7;">
+                        <input type="checkbox" id="show_summary" name="show_summary" class="fomr-check-input" @if ($data['settings']->show_summary == 1)
+                        checked
+                        @endif>
+                        <label for="show_summary" class="form-check-label">Enable Print Summary</label>
+                    </div>
+                </label>
+                <textarea class="form-control" name="end_page" id="end_page" cols="30" rows="7">{{ $data['settings']->end_page }}</textarea>
+            </div>
+            <div class="form-group flex">
+                <label for="copyright" class="col-5">
+                    <span>Copyright:</span>
+                </label>
+                <textarea class="form-control" name="copyright" id="copyright" cols="30" rows="3">{{ $data['settings']->copyright }}</textarea>
+            </div>
+            @if ($data['settings']->show_legal_services == 1)
+            <div class="form-group flex items-center justify-between">
+                <label for="contact_email" class="col-5"><span>Participant's Guide:</span></label>
+                <div class="col-7">
+                    <a href="{{ asset('Participants_Guide.pdf') }}" target="_blank">View Current Participant Guide</a>
+                </div>
+            </div>
+            @endif
+            <input type="hidden" id="survey_id" name="survey_id" value="{{ $data['survey']->survey_id }}">
+            <button type="submit" class="btn btn-revelation-primary float-right">Save Settings</button>
+            <div class="clear-both"></div>
+        </form>
+    </div>
+</div>
+@endif
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').slideUp();
+        }, 2000);
+    });
+</script>
+@endsection

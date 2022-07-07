@@ -1,0 +1,30 @@
+
+li a {
+    display: flex;
+    align-items: center;
+}
+
+li a:hover {
+    text-decoration: none; 
+}
+
+.filter-btn {
+    width: 99%;
+    padding: 3px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid lightgray;
+}
+
+.filter-btn span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.scrollable-menu {
+    height: auto;
+    max-height: 200px;
+    overflow-x: hidden
+}

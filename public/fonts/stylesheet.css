@@ -1,0 +1,36 @@
+@font-face {
+    font-family: 'Visby';
+    src: url('VisbyBold.woff2') format('woff2'),
+        url('VisbyBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Visby';
+    src: url('VisbyRegular.woff2') format('woff2'),
+        url('VisbyRegular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Visby';
+    src: url('VisbyMedium.woff2') format('woff2'),
+        url('VisbyMedium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Visby';
+    src: url('VisbySemibold.woff2') format('woff2'),
+        url('VisbySemibold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
